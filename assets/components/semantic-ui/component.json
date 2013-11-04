@@ -1,0 +1,9 @@
+{
+  "name": "semantic-ui",
+  "version": "0.0.0",
+  "commit": "2e9dc7cb576202889adbd67c6db04f11ff0ffa85",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/AmirolAhmad/Semantic-UI.git"
+  }
+}

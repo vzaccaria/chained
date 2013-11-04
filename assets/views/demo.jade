@@ -1,0 +1,37 @@
+
+extends base 
+block append content
+    .ui.segment.raised
+        h1.ui.header.aligned.center.small-caps Your Awesome Social Network
+        .ui.divider
+        form.ui.form#the-form 
+            .ui.header.aligned.small-caps Register
+            .two.fields
+                .field 
+                    .label.small-caps Nickname 
+                    input#uname.input(placeholder="Nickname", name="uname", type="text")
+                .field 
+            .two.fields
+                .field 
+                    .label.small-caps First Name
+                    input#fname.input(placeholder="First Name", name="fname", type="text")
+                .field 
+                    .label.small-caps Last Name
+                    input#lname.input(placeholder="Last Name", name="lname", type="text")
+            .one.field
+                .field 
+                    .label.small-caps E-mail 
+                    input#email.input(placeholder="E-mail",name="email", type="text")                                
+            .one.field
+                .field
+                    .label.small-caps Password 
+                    input#password1.input(placeholder="Confirm password", name="password1",type="text")  
+            .one.field
+                .field
+                    .label.small-caps Re-type password, just for science 
+                    input#password2.input(placeholder="Password", name="password2",type="text")  
+            .ui.button.blue Sign Up
+
+
+    .ui.segment.raised
+        #main-content-demo
