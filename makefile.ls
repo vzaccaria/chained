@@ -60,11 +60,11 @@ img-files = [   { files-of-type: \png,  in: "./assets/img"}
 #                 { files-of-type: \svg,  in: "./assets/less/fonts" }
 #                 { files-of-type: \ttf,  in: "./assets/less/fonts" } ]
 
-project-name      = "fluent-form-validation"
+project-name      = "chained"
 remote-site-path  = "./#project-name"
 
-# hooks.add-hook 'post-deploy', null, (path-system) ->
-#     x "./tools/deploy.coffee -s ./deploy/static -c #{__dirname} -w #{remote-site-path} deploy -v "
+hooks.add-hook 'post-deploy', null, (path-system) ->
+    x "./tools/deploy.coffee -s ./deploy/static -c #{__dirname} -w #{remote-site-path} deploy -v "
 
 hooks.add-hook 'post-deploy', null, (path-system) ->
     x "cp assets/views/users.json ./deploy/static"

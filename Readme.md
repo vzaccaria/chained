@@ -2,9 +2,9 @@
 
 
 ### What is Chained
-**Chained** is an experiment and a prototype library for Javascript. It is meant to show a concept and to provide limited (at the moment) functionality. All the examples here are written in Coffeescript (and I guess that this makes me a hippie, right?).
+**Chained** is an experiment and a prototype library for Javascript. It is meant to show a concept and to provide some limited but useful functionality. All the examples below are written in Coffeescript (and I guess that this makes me a hippie, right?).
 
-**Chained** allows to chain functions explicitly — both those that return promises and those who dont — without using `then`-based constructs.
+**Chained** allows to chain functions explicitly — both those that return promises and those who don't — without using `then`-based constructs.
 
 For example, here's how you could create a chained computation that:
 
@@ -38,11 +38,11 @@ For example, here's how you could create a chained computation that:
 
 Here, we have chained together promise-based functions (like `get` from `jQuery`) and normal functions with additional parameters (like `map` and `filter` from `underscore`). All  function invocations receive an implicit argument that is the value computed by the previous link in the chain.
 
-The function defined in `getUser` implements a processing pipeline (à la *streaming*). It starts with the link to be retrieved by specifying it with a *builder* function `_()`:
+The function defined in `getUser` implements a processing pipeline (à la *streaming*). It starts with the link to be retrieved by specifying it with `_()`:
 
     _("https://npmjs.org/~#{user}")
 
-this value is then passed to the `get()` method of `jQuery`. **Chained** knows that `jQuery` has a `get` method since we introduced its scope with
+this value is then passed to `get()` of `jQuery`. **Chained** knows that `jQuery` has a `get` method since we introduced its scope with
 
     using(jQuery) 
 
@@ -63,7 +63,7 @@ where the *lambda* function is passed effectively as the second parameter to `un
 
 So we nailed a few things here:
 
-* We can chain promise-based functions and normal functions without distinction by using the natural syntax of Javascript.
+* We can chain promise-based functions and normal functions without distinction using the natural syntax of Javascript.
 * We can use directly their names instead of using `then`.
 * We can chain **any method** from an arbitrary number of modules, provided that the module is bound to **Chained** with the `using` clause.
 * We don't modify dynamically the module that are imported. We don't change any prototype.
@@ -82,7 +82,7 @@ You need an ECMA6/harmony implementation, either in node (`node --harmony`) or i
 
 ### Does it work in the browser?
 
-Yes, check out this example [Domain Specific Language for form validation](demo.html) directly built with Chained. **Warning: it needs a recent build of Firefox. In principle also a harmony-enabled Chrome should work, but I did not try it**
+Yes, check out this example [Domain Specific Language for form validation](demo.html) directly built with Chained. **Warning: it needs a recent build of Firefox. In principle also a harmony-enabled Chrome should work, but I did not try it**.
 
 ---
 
@@ -117,7 +117,7 @@ I will not cover all the general concepts of DSLs here. For an in depth overview
 * [WebDSL](http://webdsl.org/home) 
 
 
-**Internal DSLs** are built by using the syntactic and semantic features of another language; they are used in the context of a broader application for which they address a narrow but important problem.
+**Internal DSLs** are built using the syntactic and semantic features of another language; they are used in the context of a broader application for which they address a narrow but important problem.
 
 My quest was to find a way to implement a DSL in Javascript. Let's see what features are needed by a general purpose language like Javascript to support the definition of internal DSLs:
 
@@ -144,20 +144,20 @@ My quest was to find a way to implement a DSL in Javascript. Let's see what feat
 
 At some point, it became clear to me that DSLs' *method chaining* can be used to implicitly structure promise based chains. In fact, you could build a promise-chain by handling a sequence of method missing exceptions.
 
-As a byproduct, it is straightforward to use the same technique to chain normal functions, without any exogenous constructs like `then`.
+As a byproduct, it is straightforward to use the same technique to chain normal functions, without any exogenous construct like `then`.
 
 #### The roadblocks
 
 Javascript and its relatives (such as Coffee and LiveScript) have almost all the characteristics to build a sophisticated DSL. The only problem is that they lack of a **method missing exception**; at least until Harmony came out.
 
-[Dylan Barrell already demonstrated that with the new **reflection** API, it is possible to manage missing methods](http://unobfuscated.blogspot.it/2012/06/creating-catchall-method-for-javascript.html). His technique exploits the concept of **Proxies**. Think about a Proxy like a wrapper around your original object that is able to intercept calls to methods that are not defined. **Chained** method missing handler is based on Dylan's work.
+[Dylan Barrell already demonstrated](http://unobfuscated.blogspot.it/2012/06/creating-catchall-method-for-javascript.html) that with the new **reflection** API, it is possible to manage missing methods. His technique exploits the concept of **Proxies**. Think about a Proxy like a wrapper around your original object that is able to intercept calls to methods that are not defined. **Chained** is based on Dylan's work.
 
 
 #### The basic idea
 
 The basic idea goes as follows:
 
-1. We create an object (which happens to be an object that can handle a missing method through [an appropriate mechanism](http://unobfuscated.blogspot.it/2012/06/creating-catchall-method-for-javascript.html)). Let's call it `o`.
+1. We create an object that can handle missing methods [through an appropriate mechanism](http://unobfuscated.blogspot.it/2012/06/creating-catchall-method-for-javascript.html). Let's call it `o`.
 
 2. `o` contains a `promise` property. Whenever a method missing is invoked on `o`:
 
@@ -177,7 +177,7 @@ The basic idea goes as follows:
     * even if `m` returns a new promise, this is perfectly fine since the `then` method is going to resolve the original `o.promise` accordingly.
     * we return `o`, so that we can repeat the same process by seemingly chaining methods that are effectively missing.
 
-3. We need a way to fire the very first promise off. In **Chained**, we use the function `_()` that resolves the first promise of the chain with the value passed to it:
+3. We need a way to fire the very first promise off. In **Chained**, we use the function `_()` both for creating `o` and to resolve the first promise of the chain with the value passed to it:
 
 		_(v) = -> 
 		     o = new methodMissingObject()
@@ -192,7 +192,7 @@ The basic idea goes as follows:
 The API is pretty simple at the moment; however, I think it offers a good level of flexibility to be leveraged.
 
 `chain.using(module)`
-: Extends the scope within which all missingMethods are searched for. You can include multiple modules:
+: Extends the scope within which all missing methods are searched for. You can include multiple modules:
 
             using(jQuery)
             using(underscore)
@@ -205,20 +205,20 @@ The API is pretty simple at the moment; however, I think it offers a good level 
 
 Given the deferred object `o`, the following methods apply; remember that they return again a deferred object:
 
-`o.any-missing-method(...)` 
-: if `o` eventually resolves to `v`, this is essentially equivalent to a *deferred* around `foo(v, ...)`.   
+`o.foo(...)` 
+: if `o` eventually resolves to `v`, this is essentially equivalent to building a *deferred* `foo(v, ...)`.   
 
 
 
 
 `o._(foo)`
-: specify a one shot function `foo` to be chained with the rest, without extending the scope with a whole module.   
+: specify a one shot function `foo` to be chained with the rest, without extending the scope with `using`.   
 
 
 
 
 `o._forEach(bar)`
-: when `o` will eventually resolve to an array, apply `bar` to each element; the combined promise is created with `Q.all`.
+: if `o` will eventually resolve to an array, apply `bar` to each element; the combined promise is created with `Q.all`.
 
 
 

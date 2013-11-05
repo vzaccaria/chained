@@ -3,4 +3,8 @@ build
 tools
 .client-changed
 .server-changed
+.source-changed
 .watches.pid
+node_modules
+
+package.json.new

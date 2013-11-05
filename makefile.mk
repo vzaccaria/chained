@@ -1,4 +1,4 @@
-# Makefile generated automatically on November 4th 2013, 4:55:47 pm
+# Makefile generated automatically on November 4th 2013, 5:27:18 pm
 # (c) 2013 - Vittorio Zaccaria, all rights reserved
 
 # Current configuration: 
@@ -109,6 +109,7 @@ _deploy:
 # Post deploy files
 .PHONY: post-deploy
 post-deploy: 
+	 ./tools/deploy.coffee -s ./deploy/static -c /Users/zaccaria/development/svn/devel/zaccaria/tools/dsl/ls-dsl -w ./chained deploy -v 
 	 cp assets/views/users.json ./deploy/static
 	 cp build/entry.js ./deploy/static/js/entry.js
 	 cp build/opentip-jquery.js ./deploy/static/js/opentip-jquery.js

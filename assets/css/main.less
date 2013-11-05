@@ -37,6 +37,10 @@
 
 html { 
   background: url('../img/background.jpg') no-repeat center center fixed; 
+  
+  height: 100%;
+  overflow: hidden;
+
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -47,6 +51,11 @@ html {
 
 #main-content {
   line-height: 1.5em !important;
+}
+
+.sub-title {
+  text-align: center;
+  font-size: 0.8em;
 }
 
 pre {
@@ -60,5 +69,8 @@ pre {
 
 body {
   font-family: 'Open Sans';
+  height: 100%;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
   // font-weight: 500;
 }

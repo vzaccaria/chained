@@ -1,16 +1,19 @@
 {
   "name": "chained",
   "version": "0.5.0",
-  "description": "A DSL inspired chaining library. Needs Harmony to work on browser's and node",
+  "description": "A DSL inspired chaining library. Needs Harmony to work in browser and node",
   "main": "index.js",
   "dependencies": {
+    "q": "~0.9.7",
+    "harmony-reflect": "0.0.9",
+    "underscore": "~1.5.2"
   },
   "repository": {
     "type": "git",
     "url": "git@github.com:vzaccaria/chained.git"
   },
   "directories": {
-    "lib": "./contrib"
+    "public": "./public"
   },
   "devDependencies": {},
   "scripts": {
