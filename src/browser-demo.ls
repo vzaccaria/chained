@@ -7,10 +7,24 @@ vals = [
 
 filters = 
           userNameShouldNotExist: (it, opts) ->
+                            x = it 
+
+                            success-get = -> 
+                                it = JSON.parse(it)
+                                val = _.find(it, -> it.uname == x )
+                                console.log val
+                                if val?
+                                    console.log "Already exists!!"
+                                    throw opts.msg
+                                return x 
+
+                            fail-get = -> 
+                                throw "Can't check. Connection error" 
+
                             x = it
-                            return Q($.get('/users.json')).then ->
-                                throw opts.msg if (_.find(it, -> it.uname == x ))?
-                                return x
+                            
+                            return Q($.get('users.json')).then success-get, fail-get
+
           
 
 filters = _.extend(filters, validators(vals))
