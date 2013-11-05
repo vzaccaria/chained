@@ -15,7 +15,13 @@
   "directories": {
     "public": "./public"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "~1.14.0",
+    "should": "~2.0.2",
+    "jQuery": "~1.7.4",
+    "jsdom": "~0.8.8",
+    "xmlhttprequest": "~1.6.0"
+  },
   "scripts": {
     "test": "mocha --harmony public/dsl-test.js --reporter spec"
   },
