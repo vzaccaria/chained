@@ -1,6 +1,6 @@
 {
   "name": "chained",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A DSL inspired chaining library. Needs Harmony to work in browser and node",
   "main": "index.js",
   "dependencies": {
