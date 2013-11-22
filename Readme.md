@@ -225,6 +225,36 @@ Given the deferred object `o`, the following methods apply; remember that they r
 `o.promise`
 : this is a Q promise corresponding to the deferred `o`. 
 
+**New**:
+
+`o.nFoo`
+: as `o.foo` but treats `foo` as a node-style async function (i.e., callback are assumed to be in the form `(err, res) ->` ). Example: 
+
+        using(fs)
+        _("./src/form.ls").nReadFile('utf-8').promise.then( -> done() )
+
+`o.thenFoo`:
+: when `o` eventually resolves, this is essentially equivalent to building a *deferred* `foo(...)`.   
+
+        using(console)
+        _('Just').log().thenLog("a").thenLog("sequence").thenLog("of").thenLog("strings").
+
+### History
+
+
+- 11-22-2013: 
+    * Added support for node-style invocation of callbacks (using `Q.nfapply`)
+    * Added support for plain sequential invocation of functions without passing input values
+     
+- 11-05-2013
+    * Original release
+
+
+### Tests
+
+23 passing tests, just run them with:
+
+    npm tests
 
 ### License
 

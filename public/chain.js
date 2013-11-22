@@ -1,5 +1,5 @@
 (function(){
-  var global, __s, __u, __q, __r, module, slice$ = [].slice;
+  var global, __s, __u, __q, __r, debug, toLowerCase, dbg, module, slice$ = [].slice;
   if (typeof exports == 'undefined' || exports === null) {
     global = window;
     __s = safeObject;
@@ -12,6 +12,15 @@
     __s = require("./dsl").safeObject;
     global = exports;
   }
+  debug = false;
+  toLowerCase = function(x, c){
+    return x.charAt(0).toLowerCase() + x.slice(1);
+  };
+  dbg = function(){
+    if (debug) {
+      return console.log(arguments);
+    }
+  };
   module = function(){
     var scope, safeClass, customMethods, init, addCustomMethod, bindScope, getScope, createNewMonad, fire, iface;
     init = function(s){
@@ -45,12 +54,40 @@
             };
           default:
             return function(r){
-              var args;
-              args = [r].concat(margs);
+              var args, isNode, mm, isOnlySequential, isSeqNode;
+              if (scope[method] != null) {
+                args = [r].concat(margs);
+                dbg("[chained]: invoking `" + method + "` with: ", args);
+                return scope[method].apply(this, args);
+              }
+              isNode = method.match(/^n(\w+)/);
+              if (isNode != null) {
+                args = [r].concat(margs);
+                mm = toLowerCase(isNode[1]);
+                if (scope[mm] != null) {
+                  dbg("[chained: ] invoking node function", mm, " with: ", args);
+                  return __q.nfapply(scope[mm].bind(this), args);
+                }
+              }
+              isOnlySequential = method.match(/^then(\w+)/);
+              if (isOnlySequential != null) {
+                mm = toLowerCase(isOnlySequential[1]);
+                if (scope[mm] != null) {
+                  dbg("[chained: ] invoking sequentially ", mm, " with: ", margs);
+                  return scope[mm].apply(this, margs);
+                }
+              }
+              isSeqNode = method.match(/^nThen(\w+)/);
+              if (isSeqNode != null) {
+                mm = toLowerCase(isSeqNode[1]);
+                if (scope[mm] != null) {
+                  dbg("[chaind: ] invoking sequentially node function ", mm, " with: ", margs);
+                  return __q.nfapply(scope[mm].bind(this), margs);
+                }
+              }
               if (scope[method] == null) {
                 throw method + " does'nt exist";
               }
-              return scope[method].apply(this, args);
             };
           }
         }());
@@ -62,7 +99,8 @@
       return customMethods[name] = f;
     };
     bindScope = function(it){
-      return scope = __u.extend(scope, it);
+      scope = __u.extend(scope, it);
+      return this;
     };
     getScope = function(){
       return scope;

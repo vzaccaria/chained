@@ -3,7 +3,7 @@
 require "harmony-reflect"
 require! "should"
 require! "jQuery"
-
+require! "fs"
 { init, _, bindScope} = chain = require("./chain").chain
 
 console.log chain 
@@ -122,7 +122,7 @@ describe 'Chained operations', (empty) ->
 
 
 
-describe 'Successive invocations', (empty) ->
+describe 'Stream based invocations', (empty) ->
     it 'add two times to a number, by using variables', (done) ->
       scope = { add: (x) -> x+1 }
       chain.init().bindScope(scope)
@@ -143,6 +143,13 @@ describe 'Successive invocations', (empty) ->
       # chain.init().bindScope(scope)
 
       x = chain._(3).add().add().add().promise.then(-> it.should.be.equal(6); done())
+
+describe 'Plain sequential invocations', (empty) ->
+    it 'invokes the function without the return value of the previous function', (done) ->
+      scope = { add: (x) -> x+1 }
+      chain.init().bindScope(scope)
+      x = chain._(3).thenAdd(10).thenAdd(10).promise.then( -> it.should.be.equal(11); done() )
+
 
 describe 'De-referencing', (empty) ->
     it '_ should work also when dereferenced', (done) ->
@@ -195,10 +202,18 @@ describe 'Real world usage', (empty) ->
         chain._('http://www.google.com').get().logit().promise.fail(-> true.should.be.ok; done()) 
 
 
+describe 'Invoking node-styled functions', (empty) ->
+    it 'should read an existing file', (done) ->
+      chain.init().bindScope(fs).bindScope(console)
+      chain._("./src/form.ls").nReadFile('utf-8').promise.then( -> done() )
 
+    it 'should fail on error existing file', (done) ->
+      chain.init().bindScope(fs).bindScope(console)
+      chain._("./src/for.ls").nReadFile('utf-8').promise.fail( -> done() )
 
-
-
+    it 'should read an existing file with nThen', (done) ->
+      chain.init().bindScope(fs).bindScope(console)
+      chain._("./src/for.ls").nThenReadFile("./src/form.ls", 'utf-8').promise.then( -> done() )
 
 
 

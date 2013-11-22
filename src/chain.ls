@@ -12,6 +12,13 @@ else
   __s = require("./dsl").safeObject
   global := exports 
 
+debug = false
+        
+to-lower-case = (x, c) ->
+    x.char-at(0).to-lower-case() + x.slice(1)
+
+dbg = -> if debug then console.log arguments
+
 module = ->
 
   var scope 
@@ -31,9 +38,39 @@ module = ->
                | '_'        => (r) -> margs[0].apply(@, [r])
                | '_forEach' => (r) -> __q.all([ margs[0].apply(@, [x]) for x in r ]) 
                | otherwise  => (r) ->
-                  args = [r] +++ margs 
+
+
+                  if scope[method]? 
+                    args = [r] +++ margs 
+                    dbg "[chained]: invoking `#method` with: ", args
+                    return scope[method].apply(@, args)
+
+                  is-node = method.match(/^n(\w+)/)
+
+                  if is-node?
+                    args = [r] +++ margs 
+                    mm = to-lower-case is-node[1]
+                    if scope[mm]?
+                      dbg "[chained: ] invoking node function", mm, " with: ", args
+                      return __q.nfapply(scope[mm].bind(@), args)
+
+                  is-only-sequential = method.match(/^then(\w+)/)
+
+                  if is-only-sequential?
+                    mm = to-lower-case is-only-sequential[1]
+                    if scope[mm]?
+                      dbg "[chained: ] invoking sequentially ", mm, " with: ", margs
+                      return scope[mm].apply(@, margs)
+
+                  is-seq-node = method.match(/^nThen(\w+)/)
+
+                  if is-seq-node?
+                    mm = to-lower-case is-seq-node[1]
+                    if scope[mm]?
+                      dbg "[chaind: ] invoking sequentially node function ", mm, " with: ", margs
+                      return __q.nfapply(scope[mm].bind(@), margs)
+
                   throw "#method does'nt exist" if not scope[method]?
-                  return scope[method].apply(@, args)
 
           return create-new-monad(@promise, cb)  
 
@@ -44,6 +81,7 @@ module = ->
 
   bind-scope = ->
     scope := __u.extend(scope, it)
+    return this
 
   get-scope = -> scope
 

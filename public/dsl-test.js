@@ -1,8 +1,9 @@
 (function(){
-  var should, jQuery, chain, ref$, init, _, bindScope, safeObject, safeClass, madeOf, c, slice$ = [].slice;
+  var should, jQuery, fs, chain, ref$, init, _, bindScope, safeObject, safeClass, madeOf, c, slice$ = [].slice;
   require("harmony-reflect");
   should = require('should');
   jQuery = require('jQuery');
+  fs = require('fs');
   ref$ = chain = require("./chain").chain, init = ref$.init, _ = ref$._, bindScope = ref$.bindScope;
   console.log(chain);
   safeObject = require("./dsl").safeObject;
@@ -133,7 +134,7 @@
       return chain._(10).addX(5).promise.then(this.succ, this.fail).fin(this.checkFailure);
     });
   });
-  describe('Successive invocations', function(empty){
+  describe('Stream based invocations', function(empty){
     it('add two times to a number, by using variables', function(done){
       var scope, x, y, z;
       scope = {
@@ -166,6 +167,21 @@
       var x;
       return x = chain._(3).add().add().add().promise.then(function(it){
         it.should.be.equal(6);
+        return done();
+      });
+    });
+  });
+  describe('Plain sequential invocations', function(empty){
+    return it('invokes the function without the return value of the previous function', function(done){
+      var scope, x;
+      scope = {
+        add: function(x){
+          return x + 1;
+        }
+      };
+      chain.init().bindScope(scope);
+      return x = chain._(3).thenAdd(10).thenAdd(10).promise.then(function(it){
+        it.should.be.equal(11);
         return done();
       });
     });
@@ -244,6 +260,26 @@
       });
       return chain._('http://www.google.com').get().logit().promise.fail(function(){
         true.should.be.ok;
+        return done();
+      });
+    });
+  });
+  describe('Invoking node-styled functions', function(empty){
+    it('should read an existing file', function(done){
+      chain.init().bindScope(fs).bindScope(console);
+      return chain._("./src/form.ls").nReadFile('utf-8').promise.then(function(){
+        return done();
+      });
+    });
+    it('should fail on error existing file', function(done){
+      chain.init().bindScope(fs).bindScope(console);
+      return chain._("./src/for.ls").nReadFile('utf-8').promise.fail(function(){
+        return done();
+      });
+    });
+    return it('should read an existing file with nThen', function(done){
+      chain.init().bindScope(fs).bindScope(console);
+      return chain._("./src/for.ls").nThenReadFile("./src/form.ls", 'utf-8').promise.then(function(){
         return done();
       });
     });
