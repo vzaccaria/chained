@@ -215,6 +215,22 @@ describe 'Invoking node-styled functions', (empty) ->
       chain.init().bindScope(fs).bindScope(console)
       chain._("./src/for.ls").nThenReadFile("./src/form.ls", 'utf-8').promise.then( -> done() )
 
+describe 'Invoking phantomjs/style functions', (empty) ->
+    it 'wait for a specific timeout passed as a parameter', (done) ->
+
+      myf = (f, cb, p) -> 
+        tx = -> 
+          f()
+          cb(null, 'ok')
+
+        set-timeout(tx,p)
+
+      scope = { time: myf }
+
+      chain.init().bindScope(scope)
+      intermediate = chain._("").ndThenTime(3, -> done())
+      # intermediate.promise.then(( -> done() ))
+
 
 
 

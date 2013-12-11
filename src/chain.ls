@@ -12,12 +12,13 @@ else
   __s = require("./dsl").safeObject
   global := exports 
 
-debug = false
-        
 to-lower-case = (x, c) ->
     x.char-at(0).to-lower-case() + x.slice(1)
 
+debug = false
+
 dbg = -> if debug then console.log arguments
+# dbg = console.log 
 
 module = ->
 
@@ -70,6 +71,27 @@ module = ->
                       dbg "[chaind: ] invoking sequentially node function ", mm, " with: ", margs
                       return __q.nfapply(scope[mm].bind(@), margs)
 
+                  is-iseq-node = method.match(/^ndThen(\w+)/)
+
+                  if is-iseq-node?
+                    mm = to-lower-case is-iseq-node[1]
+                    if scope[mm]?
+                      dbg "[chained: ] invoking sequentially node function with inverse pars", mm, " with: ", margs
+
+                      __l  = margs.length
+                      __f  = margs[__l - 1]
+                      __p  = margs[0 to (__l-2)]
+                      __d  = __q.defer()
+                      __cb = __d.makeNodeResolver()
+
+                      prs  = [ __f ] +++ [ __cb ] +++ __p
+
+                      scope[mm].apply(@, prs)
+                      return __d.promise
+
+                  dbg "While trying to invoke #method"
+                  dbg "I've found: -> #{scope[method]?}"
+                  dbg scope
                   throw "#method does'nt exist" if not scope[method]?
 
           return create-new-monad(@promise, cb)  

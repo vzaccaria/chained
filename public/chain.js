@@ -1,5 +1,5 @@
 (function(){
-  var global, __s, __u, __q, __r, debug, toLowerCase, dbg, module, slice$ = [].slice;
+  var global, __s, __u, __q, __r, toLowerCase, debug, dbg, module, slice$ = [].slice;
   if (typeof exports == 'undefined' || exports === null) {
     global = window;
     __s = safeObject;
@@ -12,10 +12,10 @@
     __s = require("./dsl").safeObject;
     global = exports;
   }
-  debug = false;
   toLowerCase = function(x, c){
     return x.charAt(0).toLowerCase() + x.slice(1);
   };
+  debug = false;
   dbg = function(){
     if (debug) {
       return console.log(arguments);
@@ -54,7 +54,7 @@
             };
           default:
             return function(r){
-              var args, isNode, mm, isOnlySequential, isSeqNode;
+              var args, isNode, mm, isOnlySequential, isSeqNode, isIseqNode, __l, __f, __p, __d, __cb, prs;
               if (scope[method] != null) {
                 args = [r].concat(margs);
                 dbg("[chained]: invoking `" + method + "` with: ", args);
@@ -85,6 +85,24 @@
                   return __q.nfapply(scope[mm].bind(this), margs);
                 }
               }
+              isIseqNode = method.match(/^ndThen(\w+)/);
+              if (isIseqNode != null) {
+                mm = toLowerCase(isIseqNode[1]);
+                if (scope[mm] != null) {
+                  dbg("[chained: ] invoking sequentially node function with inverse pars", mm, " with: ", margs);
+                  __l = margs.length;
+                  __f = margs[__l - 1];
+                  __p = slice$.call(margs, 0, (__l - 2) + 1 || 9e9);
+                  __d = __q.defer();
+                  __cb = __d.makeNodeResolver();
+                  prs = [__f].concat([__cb], __p);
+                  scope[mm].apply(this, prs);
+                  return __d.promise;
+                }
+              }
+              dbg("While trying to invoke " + method);
+              dbg("I've found: -> " + (scope[method] != null));
+              dbg(scope);
               if (scope[method] == null) {
                 throw method + " does'nt exist";
               }

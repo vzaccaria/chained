@@ -284,4 +284,24 @@
       });
     });
   });
+  describe('Invoking phantomjs/style functions', function(empty){
+    return it('wait for a specific timeout passed as a parameter', function(done){
+      var myf, scope, intermediate;
+      myf = function(f, cb, p){
+        var tx;
+        tx = function(){
+          f();
+          return cb(null, 'ok');
+        };
+        return setTimeout(tx, p);
+      };
+      scope = {
+        time: myf
+      };
+      chain.init().bindScope(scope);
+      return intermediate = chain._("").ndThenTime(3, function(){
+        return done();
+      });
+    });
+  });
 }).call(this);
